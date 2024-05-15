@@ -193,19 +193,17 @@ class UserService {
 
   static getFollower = async (user_id: string) => {
     try {
-      // const recordFollowers = await neo4j.run(
-      //   `MATCH (me:User {user_id: '${user_id}'})
-      //           MATCH (user)-[:FOLLOW]->(me)
-      //           WHERE NOT (me)-[:FOLLOW]->(user)
-      //           RETURN user`
-      // );
+      const recordFollowers = await dbClient.query({
+        text: `SELECT * FROM users WHERE user_id IN (SELECT follower_id FROM follows WHERE following_id = $1);`,
+        values: [user_id],
+      });
 
-      // const users = await getList(recordFollowers.records, "user");
+      const users = recordFollowers.rows;
       return {
         type: "Success",
         code: StatusCodes.OK,
         message: {
-          // follower: users,
+          follower: users,
         },
       };
     } catch (err) {
@@ -215,24 +213,17 @@ class UserService {
 
   static getFollowing = async (user_id: string) => {
     try {
-      // const recordFollowings = await neo4j.run(
-      //     `MATCH (me:User {user_id: '${user_id}'})
-      //     MATCH (me)-[:FOLLOW]->(user)
-      //     WHERE NOT (user)-[:FOLLOW]->(me)
-      //     RETURN user`
-      // )
+      const recordFollowings = await dbClient.query({
+        text: `SELECT * FROM users WHERE user_id IN (SELECT following_id FROM follows WHERE follower_id = $1);`,
+        values: [user_id],
+      });
 
-      // const recordFollowings = await neo4j.run(
-      //   `MATCH (User {user_id: '${user_id}'})-[:FOLLOW]->(user)
-      //           RETURN user`
-      // );
-
-      // const users = await getList(recordFollowings.records, "user");
+      const users = recordFollowings.rows;
       return {
         type: "Success",
         code: StatusCodes.OK,
         message: {
-          // following: users,
+          following: users,
         },
       };
     } catch (err) {
@@ -242,18 +233,24 @@ class UserService {
 
   static getFriend = async (user_id: string) => {
     try {
-      // const recordFollowings = await neo4j.run(
-      //   `MATCH (me:User {user_id: '${user_id}'})
-      //           MATCH (user)-[:FOLLOW]->(me)
-      //           MATCH (me)-[:FOLLOW]->(user)
-      //           RETURN user`
-      // );
-      // const users = await getList(recordFollowings.records, "user");
+      const recordFollowings = await dbClient.query({
+        text: `
+          SELECT * FROM users 
+          WHERE user_id IN (
+            SELECT following_id FROM follows WHERE follower_id = $1
+          ) AND user_id IN (
+            SELECT follower_id FROM follows WHERE following_id = $1
+          )
+        `,
+        values: [user_id],
+      });
+
+      const users = recordFollowings.rows;
       return {
         type: "Success",
         code: StatusCodes.OK,
         message: {
-          // friends: users,
+          friends: users,
         },
       };
     } catch (err) {
