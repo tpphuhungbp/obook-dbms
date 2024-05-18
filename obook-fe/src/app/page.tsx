@@ -20,6 +20,8 @@ export default function Home() {
   const [friends, setFriend] = useState<IUser[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
+  console.log(post)
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,6 +30,8 @@ export default function Home() {
 
         if (post.posts.length == 0) {
           const response = await PostService.getAllPost();
+          console.log(response)
+
           if (response && response.type == "Success") {
             setPost(
               response?.message?.users,
@@ -35,18 +39,19 @@ export default function Home() {
               response?.message?.photos,
               response?.message?.listPostLike
             );
+            console.log(post)
           }
         }
 
-        const response1 = await UserService.getFollower();
-        if (response1 && response1.type == "Success") {
-          setFollower(response1.message.follower[0]);
-        }
+        // const response1 = await UserService.getFollower();
+        // if (response1 && response1.type == "Success") {
+        //   setFollower(response1.message.follower[0]);
+        // }
 
-        const response2 = await UserService.getFriend();
-        if (response2 && response2.type == "Success") {
-          setFriend(response2.message.friends);
-        }
+        // const response2 = await UserService.getFriend();
+        // if (response2 && response2.type == "Success") {
+        //   setFriend(response2.message.friends);
+        // }
 
         
       } catch (err) {

@@ -32,6 +32,7 @@ export default class PostService {
                 method:'GET',
                 ...config
             })
+            console.log("Line 35 post-api.ts: ", response)
             return response
         }
         catch(err){

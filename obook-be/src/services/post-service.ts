@@ -9,6 +9,7 @@ import type { UploadFile } from "antd/es/upload/interface";
 import UploadService from "./upload-service";
 import { IImageUpload } from "../interfaces/image-upload-interface";
 import IPhoto from "../models/photo-model";
+import { dbClient } from "../utils/connect-pg";
 
 class PostService {
   static getAllPost = async (user_id: string) => {
@@ -25,15 +26,101 @@ class PostService {
       // const posts = await getList(recordPosts.records, "post");
       // const photos = await getList(recordPosts.records, "photos", true);
       // const listPostLike = recordLike.records[0].get("liked_post_ids");
+      // Giả sử bạn đã thiết lập kết nối với PostgreSQL và có hàm để chạy truy vấn
+      const userResult = await dbClient.query(`
+      SELECT * from users;
+      `);
+
+      const recordLikeResult = await dbClient.query(`
+      SELECT 
+          p.post_id AS liked_post_ids
+      FROM 
+          likes l
+      JOIN 
+          posts p ON l.post_id = p.post_id
+      WHERE 
+          l.user_id = '${user_id}';
+      `);
+
+      let users = [];
+      for (let i = 0; i < userResult.rows.length; i++) {
+        users.push({
+          user_id: userResult.rows[i].user_id,
+          email: userResult.rows[i].email,
+          password: userResult.rows[i].password,
+          firstName: userResult.rows[i].first_name,
+          lastName: userResult.rows[i].last_name,
+          avatar: userResult.rows[i].avatar,
+          age: 18,
+          sex: userResult.rows[i].sex,
+          dob: userResult.rows[i].dob,
+          accessToken: userResult.rows[i].refreshtoken,
+        })
+      }
+
+      const postsResult = await dbClient.query(`
+      SELECT * from posts;
+      `);
+      let posts = [];
+      for (let i = 0; i < postsResult.rows.length; i++) {
+        const getUserByPost = await dbClient.query(`
+        SELECT * from users where user_id = $1;
+        `, [postsResult.rows[i].user_id]);
+        const getLikesOfPost = await dbClient.query(`
+        SELECT COUNT(*)
+        FROM likes where post_id = $1
+        GROUP BY post_id;
+        `, [postsResult.rows[i].post_id])
+        posts.push({
+          post_id: postsResult.rows[i].post_id,
+          isGroup: false,
+          user: {
+            user_id: getUserByPost.rows[0].user_id,
+            email: getUserByPost.rows[0].email,
+            password: getUserByPost.rows[0].password,
+            firstName: getUserByPost.rows[0].first_name,
+            lastName: getUserByPost.rows[0].last_name,
+            avatar: getUserByPost.rows[0].avatar,
+            age: 18,
+            sex: getUserByPost.rows[0].sex,
+            dob: getUserByPost.rows[0].dob,
+            accessToken: getUserByPost.rows[0].refreshtoken,
+          },
+          description: postsResult.rows[i].description,
+          comments: {
+            user: postsResult.rows[i].user_id,
+            message: '',
+          },
+          countLikes: getLikesOfPost.rows[0].count
+        })
+      }
+      let photos = [];
+      for (let i = 0; i < postsResult.rows.length; i++) {
+        photos[i] = []
+        const getPhotosByPost = await dbClient.query(`
+          select photos.photo_id, photos.source, photos.status
+          from photos, post_has_photos 
+          where post_has_photos.photo_id = photos.photo_id and post_has_photos.post_id = $1
+        `, [posts[i].post_id])
+        if (getPhotosByPost.rows.length != 0) {
+          for (let j = 0; j < getPhotosByPost.rows.length; j++) {
+            photos[i] = getPhotosByPost.rows
+          }
+        }
+      }
+      let listPostLike = []
+      for (let i = 0; i < recordLikeResult.rows.length; i++) {
+        listPostLike.push(recordLikeResult.rows[i].liked_post_ids)
+      }
 
       return {
         type: "Success",
         code: StatusCodes.OK,
         message: {
-          // users,
-          // posts,
-          // photos,
-          // listPostLike,
+          users,
+          posts,
+          photos,
+          listPostLike,
         },
       } as IResponse;
     } catch (err) {

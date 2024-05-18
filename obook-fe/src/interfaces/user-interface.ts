@@ -9,5 +9,4 @@ export default interface IUser {
     dob?: string,
     sex?: 'male' |'female',
     accessToken?: string
-
 }
