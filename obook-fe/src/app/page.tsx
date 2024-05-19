@@ -47,8 +47,6 @@ export default function Home() {
         if (response2 && response2.type == "Success") {
           setFriend(response2.message.friends);
         }
-
-        
       } catch (err) {
         throw err;
       } finally {
@@ -75,9 +73,7 @@ export default function Home() {
           {isLoading && <Skeleton className=" bg-white" active />}
           {!isLoading &&
             post.posts.map((childPost: IPost, index: number) => {
-              let isLike: boolean = post.listPostLike.find(
-                (ele) => childPost.post_id == ele
-              )
+              let isLike: boolean = post.listPostLike.find((ele) => childPost.post_id == ele)
                 ? true
                 : false;
               return (

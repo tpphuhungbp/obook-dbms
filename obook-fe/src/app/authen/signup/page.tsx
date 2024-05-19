@@ -10,7 +10,7 @@ const SignUp = () => {
       <div className="w-1/4">
         <div className="w-full flex items-center justify-center">
           <Image
-            src={"/thumb/fotobook-full.png"}
+            src={"/thumb/fakebook-logo.png"}
             width={300}
             height={100}
             alt="Fotobook Logo"

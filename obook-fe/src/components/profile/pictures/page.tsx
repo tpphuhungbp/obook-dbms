@@ -9,7 +9,7 @@ const PersonImages = () => {
       </div>
       <div className="grid grid-cols-3 w-full py-3">
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image1.png"
           alt=""
           width={0}
           height={0}
@@ -19,7 +19,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image2.png"
           alt=""
           width={0}
           height={0}
@@ -29,7 +29,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image1.png"
           alt=""
           width={0}
           height={0}
@@ -39,7 +39,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image1.png"
           alt=""
           width={0}
           height={0}
@@ -49,7 +49,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image2.png"
           alt=""
           width={0}
           height={0}
@@ -59,7 +59,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image1.png"
           alt=""
           width={0}
           height={0}
@@ -69,7 +69,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image2.png"
           alt=""
           width={0}
           height={0}
@@ -79,7 +79,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image2.png"
           alt=""
           width={0}
           height={0}
@@ -89,7 +89,7 @@ const PersonImages = () => {
         />
 
         <Image
-          src="/mock/avatar.jpeg"
+          src="/mock/mock-image1.png"
           alt=""
           width={0}
           height={0}

@@ -18,15 +18,14 @@ const FotobookThumb = () => {
   return (
     <>
       <Image
-        src={"/thumb/fotobook-full.png"}
+        src={"/thumb/fakebook-logo.png"}
         width={300}
         height={100}
         alt="Fotobook Logo"
         className="-ml-7 py-4"
       />
       <p className="text-2xl">
-        Fotobook giúp bạn kết nối và chia sẻ với mọi người trong cuộc sống của
-        bạn.
+        Fotobook giúp bạn kết nối và chia sẻ với mọi người trong cuộc sống của bạn.
       </p>
     </>
   );
@@ -44,14 +43,8 @@ const LoginForm = () => {
         const response = await UserService.login(email, password);
         if (response && response.type == "Success") {
           setUser(response.message as IUser);
-          localStorage.setItem(
-            "accessToken",
-            String(response.message.accessToken)
-          );
-          localStorage.setItem(
-            "refreshToken",
-            String(response.message.refreshToken)
-          );
+          localStorage.setItem("accessToken", String(response.message.accessToken));
+          localStorage.setItem("refreshToken", String(response.message.refreshToken));
           router.push("/");
         }
       }
@@ -75,10 +68,7 @@ const LoginForm = () => {
       initialValues={{ remember: true }}
       onFinish={handleLogin}
     >
-      <Form.Item
-        name="email"
-        rules={[{ required: true, message: "Hãy nhập email của bạn!" }]}
-      >
+      <Form.Item name="email" rules={[{ required: true, message: "Hãy nhập email của bạn!" }]}>
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
           className="border border-1 border-gray-100 p-3 rounded-md focus:outline-1 outline-blue-600"
