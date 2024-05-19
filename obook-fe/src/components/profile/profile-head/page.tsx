@@ -225,7 +225,7 @@ const ModalAvatar = ({ open, setOpen }: ModalProps) => {
           listType="picture-circle"
           className="avatar-uploader"
           showUploadList={false}
-          action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+          action="https://run.mocky.io/v3/0713439f-7371-44db-93f5-1ddd3f2b8630"
           onChange={handleChange}
         >
           {imageUrl ? (

@@ -53,7 +53,7 @@ const ModalPost = ({ open, setOpen }: Props) => {
       description,
       fileList
     );
-
+    console.log(response)
     if (response && response.type == "Success") {
       addPost(
         response?.message.user,
@@ -120,7 +120,7 @@ const ModalPost = ({ open, setOpen }: Props) => {
           <ol className="mt-[50px]">
             <ImgCrop rotationSlider>
               <Upload
-                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                action="https://run.mocky.io/v3/0713439f-7371-44db-93f5-1ddd3f2b8630"
                 listType="picture-card"
                 fileList={fileList}
                 onChange={onChange}

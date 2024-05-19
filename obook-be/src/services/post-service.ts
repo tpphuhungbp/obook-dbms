@@ -41,7 +41,6 @@ class PostService {
       WHERE 
           l.user_id = '${user_id}';
       `);
-
       let users = [];
       for (let i = 0; i < userResult.rows.length; i++) {
         users.push({
@@ -61,16 +60,19 @@ class PostService {
       const postsResult = await dbClient.query(`
       SELECT * from posts;
       `);
+
       let posts = [];
       for (let i = 0; i < postsResult.rows.length; i++) {
         const getUserByPost = await dbClient.query(`
         SELECT * from users where user_id = $1;
         `, [postsResult.rows[i].user_id]);
+        
         const getLikesOfPost = await dbClient.query(`
         SELECT COUNT(*)
         FROM likes where post_id = $1
         GROUP BY post_id;
         `, [postsResult.rows[i].post_id])
+
         posts.push({
           post_id: postsResult.rows[i].post_id,
           isGroup: false,
@@ -94,6 +96,8 @@ class PostService {
           countLikes: getLikesOfPost.rows[0].count
         })
       }
+      console.log("Users: ", posts)
+
       let photos = [];
       for (let i = 0; i < postsResult.rows.length; i++) {
         photos[i] = []
@@ -147,6 +151,7 @@ class PostService {
             length: 32,
             useLetters: true,
           });
+          console.log("userResult: ", fileList)
 
           if (fileList) {
             // get url image from clouddinary
@@ -154,6 +159,7 @@ class PostService {
             const userResult = await dbClient.query(`
               SELECT * from users where user_id = $1;
             `, [user_id]);
+            console.log("userResult: ", userResult.rows)
             const user = {
                 user_id: userResult.rows[0].user_id,
                 email: userResult.rows[0].email,
@@ -174,17 +180,17 @@ class PostService {
             const create = await dbClient.query(`
               insert into posts (post_id, description, status, user_id)
               values ($1, $2, $3, $4);
-            `, [post_id, description, 'public', user.user_id]);
+            `, [post_id, description, 'public', user_id]);
 
             let photos = []
             for (let i = 0; i < uploadImages.length; i++) {
-              let uploadImg = await dbClient.query(`
-                insert into post_has_photos (post_id, photo_id) values ($1, $2)
-              `, [post_id, uploadImages[i].photo_id])
               let uploadpt = await dbClient.query(`
                 insert into photos (photo_id, status, source)
                 values ($1, $2, $3)
               `, [uploadImages[i].photo_id, 'public', uploadImages[i].url])
+              let uploadImg = await dbClient.query(`
+                insert into post_has_photos (post_id, photo_id) values ($1, $2)
+              `, [post_id, uploadImages[i].photo_id])
               photos.push({
                 photo_id: uploadImages[i].photo_id,
                 source: uploadImages[i].url,
@@ -347,33 +353,34 @@ class PostService {
 
   static deletePost = async (post_id: String) => {
     try {
-      // if (post_id == "") {
-      //   return {
-      //     type: "Error",
-      //     code: StatusCodes.BAD_REQUEST,
-      //     message: "Invalid post",
-      //   } as IResponse;
-      // }
-
-      // const recordPost = await neo4j.run(
-      //   `MATCH (post:Post {post_id: "${post_id}"})-[:HAS]->(photo:Photo) DETACH DELETE post RETURN post, photo`
-      // );
-
-      // if (recordPost && recordPost.records.length > 0) {
-      //   const photos = (await getList(recordPost.records, "photo")) as IPhoto[];
-      //   UploadService.removeImages(photos);
-      //   return {
-      //     type: "Success",
-      //     code: StatusCodes.OK,
-      //     message: "Delete post successfully",
-      //   } as IResponse;
-      // } else {
+      if (post_id == "") {
+        return {
+          type: "Error",
+          code: StatusCodes.BAD_REQUEST,
+          message: "Invalid post",
+        } as IResponse;
+      }
+      const getPhotosByPost = await dbClient.query(`
+            select photos.photo_id, photos.source, photos.status
+            from photos, post_has_photos 
+            where post_has_photos.photo_id = photos.photo_id and post_has_photos.post_id = $1
+      `, [post_id])
+      const deleteLikePost = await dbClient.query(`
+        delete from likes where post_id = $1;
+      `, [post_id])
+      const deletePhotos = await dbClient.query(`
+        delete from post_has_photos where post_id = $1;  
+      `, [post_id])
+      const deletePost = await dbClient.query(`
+        delete from posts where post_id = $1;
+      `, [post_id])
+      // const photos = (await getList(recordPost.records, "photo")) as IPhoto[];
+      // UploadService.removeImages(photos);
       return {
-        type: "Error",
-        code: StatusCodes.BAD_REQUEST,
-        message: "Post not found",
+        type: "Success",
+        code: StatusCodes.OK,
+        message: "Delete post successfully",
       } as IResponse;
-      // }
     } catch (err) {
       return {
         type: "Error",
