@@ -28,7 +28,7 @@ const StoryCard = ({ user, isStory, story }: Props) => {
       ) : (
         <div className="h-[300px] shadow rounded-[15px] flex flex-col relative ">
           <img
-            src={`"./thumb/stories${Math.floor(Math.random() * 3) + 1}.jpg`}
+            src={`./thumb/stories${Math.floor(Math.random() * 3) + 1}.jpg`}
             className="w-full h-full rounded-[15px] transform scale-100 hover:scale-105 transition-transform hover:brightness-[80%]"
           />
           <span className=" absolute top-[15px] left-[15px]">
