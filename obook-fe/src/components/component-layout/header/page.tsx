@@ -78,7 +78,7 @@ const Header = ({ theme }: Props) => {
           <input
             type="text"
             className="w-[220px] bg-transparent h-[30px]  text-[18px]"
-            placeholder="Tìm Kiếm Trên Fotobook"
+            placeholder="Tìm Kiếm Trên Fakebook"
           />
         </span>
       </section>

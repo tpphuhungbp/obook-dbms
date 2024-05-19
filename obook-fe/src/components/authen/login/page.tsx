@@ -25,7 +25,7 @@ const FotobookThumb = () => {
         className="-ml-7 py-4"
       />
       <p className="text-2xl">
-        Fotobook giúp bạn kết nối và chia sẻ với mọi người trong cuộc sống của bạn.
+        Fakebook giúp bạn kết nối và chia sẻ với mọi người trong cuộc sống của bạn.
       </p>
     </>
   );
@@ -41,7 +41,7 @@ const LoginForm = () => {
       if (email && password) {
         setLoading(true);
         const response = await UserService.login(email, password);
-        console.log(response)
+        console.log(response);
         if (response && response.type == "Success") {
           setUser(response.message as IUser);
           localStorage.setItem("accessToken", String(response.message.accessToken));
