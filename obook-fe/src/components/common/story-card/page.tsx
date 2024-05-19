@@ -19,9 +19,7 @@ const StoryCard = ({ user, isStory, story }: Props) => {
             className="h-[80%] rounded-t-[15px] bg-white"
           />
           <div className="bg-[#242526] h-[20%] rounded-b-[15px] w-full flex flex-col justify-end">
-            <h2 className="font-semibold flex justify-center text-[16px] mb-[10px]">
-              Tạo tin
-            </h2>
+            <h2 className="font-semibold flex justify-center text-[16px] mb-[10px]">Tạo tin</h2>
           </div>
           <span className="block w-full border-0 absolute bottom-[12%]">
             <IoMdAddCircle className="bg-[#242526] mx-auto border-[#242526] border-[4px] rounded-full text-[45px] text-[#075CE5] " />
@@ -30,7 +28,7 @@ const StoryCard = ({ user, isStory, story }: Props) => {
       ) : (
         <div className="h-[300px] shadow rounded-[15px] flex flex-col relative ">
           <img
-            src="./thumb/tếttết.jpg"
+            src={`"./thumb/stories${Math.floor(Math.random() * 3) + 1}.jpg`}
             className="w-full h-full rounded-[15px] transform scale-100 hover:scale-105 transition-transform hover:brightness-[80%]"
           />
           <span className=" absolute top-[15px] left-[15px]">

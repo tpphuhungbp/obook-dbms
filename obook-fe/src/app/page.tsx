@@ -47,10 +47,10 @@ export default function Home() {
         //   setFollower(response1.message.follower[0]);
         // }
 
-        // const response2 = await UserService.getFriend();
-        // if (response2 && response2.type == "Success") {
-        //   setFriend(response2.message.friends);
-        // }
+        const response2 = await UserService.getFriend();
+        if (response2 && response2.type == "Success") {
+          setFriend(response2.message.friends);
+        }
 
         
       } catch (err) {
@@ -79,9 +79,7 @@ export default function Home() {
           {isLoading && <Skeleton className=" bg-white" active />}
           {!isLoading &&
             post.posts.map((childPost: IPost, index: number) => {
-              let isLike: boolean = post.listPostLike.find(
-                (ele) => childPost.post_id == ele
-              )
+              let isLike: boolean = post.listPostLike.find((ele) => childPost.post_id == ele)
                 ? true
                 : false;
               return (

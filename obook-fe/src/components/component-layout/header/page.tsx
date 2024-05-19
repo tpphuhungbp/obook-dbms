@@ -71,10 +71,7 @@ const Header = ({ theme }: Props) => {
       {contextHolder}
       <section className="col-span-3 flex items-center ">
         <Link href="/">
-          <img
-            src="../thumb/facebook.png"
-            className="ml-5 mr-3 w-[50px] rounded"
-          />
+          <img src="../thumb/fakebook.png" className="ml-5 mr-3 w-[50px] rounded" />
         </Link>
         <span className="w-[300px] h-[50px] rounded-[30px] bg-[#3A3B3C] text-[#728087] flex items-center">
           <BiSearch className="text-[25px] mx-[10px] " />
