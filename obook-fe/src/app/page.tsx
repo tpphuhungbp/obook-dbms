@@ -39,7 +39,6 @@ export default function Home() {
               response?.message?.photos,
               response?.message?.listPostLike
             );
-            console.log(post)
           }
         }
 

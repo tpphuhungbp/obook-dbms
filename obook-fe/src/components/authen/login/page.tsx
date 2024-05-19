@@ -42,6 +42,7 @@ const LoginForm = () => {
       if (email && password) {
         setLoading(true);
         const response = await UserService.login(email, password);
+        console.log(response)
         if (response && response.type == "Success") {
           setUser(response.message as IUser);
           localStorage.setItem(

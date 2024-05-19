@@ -30,7 +30,7 @@ class PostService {
       const userResult = await dbClient.query(`
       SELECT * from users;
       `);
-
+      // console.log("Users: ", userResult.rows)
       const recordLikeResult = await dbClient.query(`
       SELECT 
           p.post_id AS liked_post_ids
@@ -119,8 +119,9 @@ class PostService {
         message: {
           users,
           posts,
-          photos,
+          photos, //[], []
           listPostLike,
+          // users: userResult.rows
         },
       } as IResponse;
     } catch (err) {
@@ -134,52 +135,72 @@ class PostService {
 
   static createPost = async ({ user_id, description }: IPost, fileList: UploadFile[]) => {
     try {
-      //     if (user_id == "" || description == "" || fileList == null) {
-      //       return {
-      //         type: "Error",
-      //         code: 400,
-      //         message: "Content of the post error ",
-      //       } as IResponse;
-      //     }
+          if (user_id == "" || description == "" || fileList == null) {
+            return {
+              type: "Error",
+              code: 400,
+              message: "Content of the post error ",
+            } as IResponse;
+          }
 
-      //     const post_id: String = generateUniqueId({
-      //       length: 32,
-      //       useLetters: true,
-      //     });
+          const post_id: String = generateUniqueId({
+            length: 32,
+            useLetters: true,
+          });
 
-      //     if (fileList) {
-      //       // get url image from clouddinary
-      //       const uploadImages = (await UploadService.uploadImages(fileList)) as IImageUpload[];
-      //       // generate string Post-[:HAS]-Photo
-      //       let strPhoto: String = "";
-      //       uploadImages.forEach((image, index) => {
-      //         strPhoto += `(p${index}:Photo {photo_id:'${image.photo_id}', source: '${image.url}', status: 'public'}),
-      //                   (n)-[:HAS]->(p${index}),`;
-      //       });
-      //       const recordPost = await neo4j.run(
-      //         `MATCH (u:User {user_id:'${user_id}'})
-      //                   CREATE (n:Post {post_id:'${post_id}', description:'${description}', countLikes:0, status: 'public'}),
-      //                   ${strPhoto}
-      //                   (u)-[:CONTAIN]->(n)
-      //                   RETURN n AS post, u AS user
-      //                   `
-      //       );
-      //       const recordPhoto = await neo4j.run(`
-      //               MATCH (n:Post{post_id:'${post_id}'})-[:HAS]->(p:Photo) RETURN p AS photos`);
+          if (fileList) {
+            // get url image from clouddinary
+            const uploadImages = (await UploadService.uploadImages(fileList)) as IImageUpload[];
+            const userResult = await dbClient.query(`
+              SELECT * from users where user_id = $1;
+            `, [user_id]);
+            const user = {
+                user_id: userResult.rows[0].user_id,
+                email: userResult.rows[0].email,
+                password: userResult.rows[0].password,
+                firstName: userResult.rows[0].first_name,
+                lastName: userResult.rows[0].last_name,
+                avatar: userResult.rows[0].avatar,
+                sex: userResult.rows[0].sex,
+                dob: userResult.rows[0].dob,
+                accessToken: userResult.rows[0].refreshtoken,
+            }
+            const post = {
+              post_id: post_id,
+              isGroup: false,
+              user: user,
+              description: description,
+            }
+            const create = await dbClient.query(`
+              insert into posts (post_id, description, status, user_id)
+              values ($1, $2, $3, $4);
+            `, [post_id, description, 'public', user.user_id]);
 
-      //       let user = await getValue(recordPost.records[0], "user");
-      //       let post = await getValue(recordPost.records[0], "post");
-      //       let photos = await getList(recordPhoto.records, "photos");
-      //       return {
-      //         type: "Success",
-      //         code: 200,
-      //         message: {
-      //           user,
-      //           post,
-      //           photos: photos,
-      //         },
-      //       } as IResponse;
-      //     }
+            let photos = []
+            for (let i = 0; i < uploadImages.length; i++) {
+              let uploadImg = await dbClient.query(`
+                insert into post_has_photos (post_id, photo_id) values ($1, $2)
+              `, [post_id, uploadImages[i].photo_id])
+              let uploadpt = await dbClient.query(`
+                insert into photos (photo_id, status, source)
+                values ($1, $2, $3)
+              `, [uploadImages[i].photo_id, 'public', uploadImages[i].url])
+              photos.push({
+                photo_id: uploadImages[i].photo_id,
+                source: uploadImages[i].url,
+                status: 'public'
+              })
+            }
+            return {
+              type: "Success",
+              code: 200,
+              message: {
+                user,
+                post,
+                photos
+              },
+            } as IResponse;
+          }
 
       return {
         type: "Error",
@@ -193,40 +214,40 @@ class PostService {
 
   static getPostByPostId = async (post_id: String) => {
     try {
-      //     if (post_id == "") {
-      //       return {
-      //         type: "Error",
-      //         code: StatusCodes.BAD_REQUEST,
-      //         message: "Invalid post",
-      //       } as IResponse;
-      //     }
+          if (post_id == "") {
+            return {
+              type: "Error",
+              code: StatusCodes.BAD_REQUEST,
+              message: "Invalid post",
+            } as IResponse;
+          }
 
-      //     const recordPost = await neo4j.run(
-      //       `MATCH (user:User)-[:CONTAIN]->(post:Post {post_id:'${post_id}'})-[:HAS]->(photo:Photo)
-      //               RETURN user, post, COLLECT(photo) as photos`
-      //     );
+          const recordPost = await dbClient.query(`
+            select * from posts where post_id = $1
+          `, [post_id])
 
-      //     if (recordPost && recordPost.records.length > 0) {
-      //       const user = await getList(recordPost.records, "user");
-      //       const post = await getList(recordPost.records, "post");
-      //       const photos = await getList(recordPost.records, "photos", true);
+          if (recordPost && recordPost.rows.length > 0) {
+          //   const user = await getList(recordPost.records, "user");
+          //   const post = await getList(recordPost.records, "post");
+          //   const photos = await getList(recordPost.records, "photos", true);
 
-      //       return {
-      //         type: "Success",
-      //         code: StatusCodes.OK,
-      //         message: {
-      //           user: user[0],
-      //           post: post[0],
-      //           photos: photos[0],
-      //         },
-      //       } as IResponse;
-      //     } else {
-      return {
-        type: "Error",
-        code: StatusCodes.BAD_REQUEST,
-        message: "Post not found",
-      } as IResponse;
-      // }
+            return {
+              type: "Success",
+              code: StatusCodes.OK,
+              message: {
+                // user,
+                // post,
+                // photos,
+                post: recordPost.rows
+              },
+            } as IResponse;
+          } else {
+            return {
+              type: "Error",
+              code: StatusCodes.BAD_REQUEST,
+              message: "Post not found",
+            } as IResponse;
+          }
     } catch (err) {
       return {
         type: "Error",
@@ -238,59 +259,79 @@ class PostService {
 
   static getPostByUserId = async (user_id: string, current_user_id: string) => {
     try {
-      // if (user_id == "") {
-      //   return {
-      //     type: "Error",
-      //     code: StatusCodes.BAD_REQUEST,
-      //     message: "Invalid post",
-      //   } as IResponse;
-      // }
+      if (user_id == "") {
+        return {
+          type: "Error",
+          code: StatusCodes.BAD_REQUEST,
+          message: "Invalid post",
+        } as IResponse;
+      }
 
-      // const recordPost = await neo4j.run(
-      //   `MATCH (user:User {user_id:'${user_id}'})
-      //            OPTIONAL MATCH (user)-[:CONTAIN]->(post:Post)-[:HAS]->(photo:Photo)
-      //            RETURN user, post, COLLECT(photo) as photos`
-      // );
-      // const recordLike = await neo4j.run(
-      //   `MATCH (user:User{user_id:"${current_user_id}"})-[:LIKE]->(post:Post)
-      //           RETURN COLLECT(DISTINCT post.post_id) AS liked_post_ids`
-      // );
+      const recordPost = await dbClient.query(`
+        select * from posts where user_id = $1
+      `, [user_id])
+      const recordLike = await dbClient.query(`
+        select post_id from likes where user_id = $1
+      `, [current_user_id])
 
-      // if (recordPost && recordPost.records.length > 0) {
-      //   const user = await getList(recordPost.records, "user");
-      //   const listPostLike = recordLike.records[0].get("liked_post_ids");
-      //   try {
-      //     const posts = await getList(recordPost.records, "post");
-      //     const photos = await getList(recordPost.records, "photos", true);
-      //     return {
-      //       type: "Success",
-      //       code: StatusCodes.OK,
-      //       message: {
-      //         user: user[0],
-      //         posts,
-      //         photos,
-      //         listPostLike,
-      //       },
-      //     } as IResponse;
-      //   } catch (err) {
-      //     return {
-      //       type: "Success",
-      //       code: StatusCodes.OK,
-      //       message: {
-      //         user: user[0],
-      //         posts: [],
-      //         photos: [],
-      //         listPostLike,
-      //       },
-      //     } as IResponse;
-      //   }
-      // } else {
-      return {
-        type: "Error",
-        code: StatusCodes.BAD_REQUEST,
-        message: "Post not found",
-      } as IResponse;
-      // }
+      if (recordPost && recordPost.rows.length > 0) {
+        const userResult = await dbClient.query(`
+          select * from users where user_id = $1
+        `, [user_id])
+        const user = {
+          user_id: userResult.rows[0].user_id,
+          email: userResult.rows[0].email,
+          password: userResult.rows[0].password,
+          firstName: userResult.rows[0].first_name,
+          lastName: userResult.rows[0].last_name,
+          avatar: userResult.rows[0].avatar,
+          sex: userResult.rows[0].sex,
+          dob: userResult.rows[0].dob,
+          accessToken: userResult.rows[0].refreshtoken,
+        }
+        const listPostLike = [];
+        for (let i = 0; i < recordLike.rows.length; i++) listPostLike.push(recordLike.rows[i].post_id)
+        const posts = []
+        const photos = []
+        for (let i = 0; i < recordPost.rows.length; i++) {
+          posts.push({
+            post_id: recordPost.rows[i].post_id,
+            isGroup: false,
+            user: user,
+            description: recordPost.rows[i].description,
+            status: recordPost.rows[i].status
+          })
+          photos[i] = []
+          const getPhotosByPost = await dbClient.query(`
+            select photos.photo_id, photos.source, photos.status
+            from photos, post_has_photos 
+            where post_has_photos.photo_id = photos.photo_id and post_has_photos.post_id = $1
+          `, [recordPost.rows[i].post_id])
+          if (getPhotosByPost.rows.length != 0) {
+            for (let j = 0; j < getPhotosByPost.rows.length; j++) {
+              photos[i] = getPhotosByPost.rows
+            }
+          }
+        }
+        
+        
+        return {
+            type: "Success",
+            code: StatusCodes.OK,
+            message: {
+              user,
+              posts,
+              photos,
+              listPostLike,
+            },
+          } as IResponse;
+      } else {
+        return {
+          type: "Error",
+          code: StatusCodes.BAD_REQUEST,
+          message: "Post not found",
+        } as IResponse;
+      }
     } catch (err) {
       return {
         type: "Error",

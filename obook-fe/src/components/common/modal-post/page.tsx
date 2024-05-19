@@ -43,7 +43,6 @@ const ModalPost = ({ open, setOpen }: Props) => {
 
   const getDescription = (event: any) => {
     setDescription(event.target.value);
-    console.log(description);
   };
 
   const handleOk = async () => {

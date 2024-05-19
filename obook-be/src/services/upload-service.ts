@@ -9,6 +9,7 @@ class UploadService {
     static uploadImages = async (fileList:UploadFile[])=>{
         try{
             const images: string[] = fileList.map(file=>file.thumbUrl as string);
+            console.log(images)
             let uploadImages : IImageUpload[]=[];
             for (let image of images)
             {

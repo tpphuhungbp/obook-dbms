@@ -310,7 +310,17 @@ class UserService {
           `SELECT * FROM users WHERE user_id = '${decoded.id}'`
         );
 
-        const user = userRecord.rows[0];
+        const user = {
+          user_id: userRecord.rows[0].user_id,
+          email: userRecord.rows[0].email,
+          password: userRecord.rows[0].password,
+          firstName: userRecord.rows[0].first_name,
+          lastName: userRecord.rows[0].last_name,
+          avatar: userRecord.rows[0].avatar,
+          dob: userRecord.rows[0].dob,
+          sex: userRecord.rows[0].sex,
+          accessToken: userRecord.rows[0].refreshtoken,
+        }
 
         return {
           type: "Success",

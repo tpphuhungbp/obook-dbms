@@ -12,7 +12,7 @@ type Props = {
 
 const CreatePost = ({ current_user }: Props) => {
   const [open, setOpen] = useState(false);
-
+  console.log(current_user)
   return (
     <div className="bg-[#242526] px-[20px] my-[25px]  h-[150px] rounded-[10px] py-[15px] ">
       <section className="flex items-center ">
