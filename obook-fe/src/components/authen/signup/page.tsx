@@ -1,3 +1,4 @@
+"use client";
 import { Button, Form, Input, Select } from "antd";
 import IUser from "@/interfaces/user-interface";
 import useUser from "@/stores/user-store";
@@ -21,14 +22,7 @@ const SignUpForm = () => {
   const { user, setUser } = useUser();
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const handleSignUp = async ({
-    firstName,
-    lastName,
-    email,
-    password,
-    dob,
-    sex,
-  }: RegisterType) => {
+  const handleSignUp = async ({ firstName, lastName, email, password, dob, sex }: RegisterType) => {
     try {
       setLoading(true);
       const response = await UserService.signUp({
@@ -41,14 +35,8 @@ const SignUpForm = () => {
       });
       if (response && response.type == "Success") {
         setUser(response.message as IUser);
-        localStorage.setItem(
-          "accessToken",
-          String(response.message.accessToken)
-        );
-        localStorage.setItem(
-          "refreshToken",
-          String(response.message.refreshToken)
-        );
+        localStorage.setItem("accessToken", String(response.message.accessToken));
+        localStorage.setItem("refreshToken", String(response.message.refreshToken));
         router.push("/");
       }
     } catch (err) {
@@ -133,9 +121,7 @@ const SignUpForm = () => {
                 if (!value || getFieldValue("password") === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(
-                  new Error("Mật khẩu xác nhận lại không khớp!")
-                );
+                return Promise.reject(new Error("Mật khẩu xác nhận lại không khớp!"));
               },
             }),
           ]}

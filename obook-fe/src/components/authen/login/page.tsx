@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input } from "antd";

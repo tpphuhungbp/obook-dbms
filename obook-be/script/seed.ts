@@ -2,7 +2,7 @@ import { Client, Pool } from "pg";
 
 async function start() {
   const client = new Client({
-    connectionString: `postgres://postgres:thang034869@localhost:5432/obook`,
+    connectionString: `postgres://postgres:postgres@localhost:5432/obook`,
   });
 
   await client.connect();

@@ -1,3 +1,4 @@
+"use client";
 import useUser from "@/stores/user-store";
 import checkTokenExpiration from "@/utils/check-token-expiration";
 import { useRouter } from "next/navigation";
@@ -6,6 +7,8 @@ import UserService from "./api/user-api";
 const checkLogin = async () => {
   const router = useRouter();
   if (typeof localStorage !== "undefined") {
+    console.log("use localStorage checklogin");
+
     const accessToken = localStorage.getItem("accessToken") as string;
     const refreshToken = localStorage.getItem("refreshToken") as string;
 
@@ -44,7 +47,7 @@ const checkLogin = async () => {
       }
     }
   } else {
-    console.log("👉️ can't use localStorage");
+    console.log("👉️ can't use localStorage check login");
   }
 };
 
